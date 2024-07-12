@@ -120,6 +120,8 @@
      * {
      * time: 2000, // 유지 시간
      * showTimer: true, // 타이머 표시 여부
+     * zIndex: 99 // css 에서의 z-index,
+     * stackEnable: true, // 중첩시 bottom 변경 여부
      * }
      */
     const toast = (content, type = "D", option) => {
@@ -127,6 +129,8 @@
         const optionDefault = {
             time: 2000,
             showTimer: true,
+            zIndex: 99,
+            stackEnable: true,
         }
         option = {
             ...optionDefault,
@@ -155,7 +159,11 @@
             document.querySelector(`[data-role="toast"]`)
             ? parseInt( getComputedStyle( document.querySelector(`[data-role="toast"]`) ).bottom ) + height + bottom
             : bottom
-        }px">
+        }px"; z-index: ${
+            document.querySelector(`[data-role="toast"]`)
+            ? parseInt( getComputedStyle( document.querySelector(`[data-role="toast"]`) ).zIndex ) + 1
+            : option.zIndex
+        }>
             <div data-id="body">${content}</div>
             <button type="button" data-role="close">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#555">
@@ -177,8 +185,9 @@
 
     const typeArray = ["d", "s", "w", "p"]
     let type = 0
-    document.querySelector("#showModal").addEventListener("click", () => 
-    toast("Danger Toast", typeArray[type++], {showTimer: false})
-    )
+    document.querySelector("#showModal").addEventListener("click", () => {
+        if(type > 3) type = 0
+        toast("Toast 토스트 !!", typeArray[type++])
+    })
 </script>
 </html>

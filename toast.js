@@ -6,6 +6,8 @@
  * {
  * time: 2000, // 유지 시간
  * showTimer: true, // 타이머 표시 여부
+ * zIndex: 99 // css 에서의 z-index,
+ * stackEnable: true, // 중첩시 bottom 변경 여부
  * }
  */
 const toast = (content, type = "D", option) => {
@@ -13,6 +15,8 @@ const toast = (content, type = "D", option) => {
     const optionDefault = {
         time: 2000,
         showTimer: true,
+        zIndex: 99,
+        stackEnable: true,
     }
     option = {
         ...optionDefault,
@@ -34,7 +38,35 @@ const toast = (content, type = "D", option) => {
     const bottom = 10
 
     // const id = `customId_No${Math.floor(Math.random() * 10e5)}`
-    document.head.insertAdjacentHTML("beforeend", `<style>
+    document.body.insertAdjacentHTML("afterbegin", `
+    <div id="toast" class="${getType()}" data-role="toast" style="bottom: ${
+        option.stackEnable && document.querySelector(`[data-role="toast"]`)
+        ? parseInt( getComputedStyle( document.querySelector(`[data-role="toast"]`) ).bottom ) + height + bottom
+        : bottom
+    }px; z-index: ${
+        document.querySelector(`[data-role="toast"]`)
+        ? parseInt( getComputedStyle( document.querySelector(`[data-role="toast"]`) ).zIndex ) + 1
+        : option.zIndex
+    }">
+        <div data-id="body">${content}</div>
+        <button type="button" data-role="close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#555">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+            </svg>
+        </button>
+        <div data-id="timer"></div>
+    </div>
+    `)
+
+    const close = () => toast.classList.add("hide") ?? toast.addEventListener("transitionend", toast.remove)
+    const toast = document.querySelector("#toast")
+    toast.addEventListener("click", close)
+    const timer = toast.querySelector(`[data-id="timer"]`)
+    timer.style.animationDuration = option.time + "ms"
+    timer.addEventListener("animationend", close)
+    option.showTimer || (timer.classList.add("hide") ?? setTimeout(close, option.time))
+    
+    toast.insertAdjacentHTML("beforeend", `<style>
         #toast {
             width: 400px;
             height: 45px;
@@ -118,27 +150,4 @@ const toast = (content, type = "D", option) => {
             background: 0;
         }
     </style>`)
-    document.body.insertAdjacentHTML("afterbegin", `
-    <div id="toast" class="${getType()}" data-role="toast" style="bottom: ${
-        document.querySelector(`[data-role="toast"]`)
-        ? parseInt( getComputedStyle( document.querySelector(`[data-role="toast"]`) ).bottom ) + height + bottom
-        : bottom
-    }px">
-        <div data-id="body">${content}</div>
-        <button type="button" data-role="close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#555">
-                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
-            </svg>
-        </button>
-        <div data-id="timer"></div>
-    </div>
-    `)
-
-    const close = () => toast.classList.add("hide") ?? toast.addEventListener("transitionend", toast.remove)
-    const toast = document.querySelector("#toast")
-    toast.addEventListener("click", close)
-    const timer = toast.querySelector(`[data-id="timer"]`)
-    timer.style.animationDuration = option.time + "ms"
-    timer.addEventListener("animationend", close)
-    option.showTimer || (timer.classList.add("hide") ?? setTimeout(close, option.time))
 }
