@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인 페이지</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            list-style: none;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 50px;
+        }
+
+
+
+
+        #toast {
+            width: 400px;
+            height: 45px;
+            position: fixed;
+            right: 10px;
+            bottom: 10px;
+            border-radius: 7px;
+            background: #eee;
+            overflow: hidden;
+            color: #555;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+
+            /* animation: toast .3s cubic-bezier(.5, -1, .5, 1.7); */
+            animation: toast .3s cubic-bezier(.5, -1, .5, 1.7);
+            /* transition: right .3s cubic-bezier(.5, -1, .5, 1.3); */
+            transition: right .3s cubic-bezier(.5, -1, .5, 1);
+        }
+        @keyframes toast {
+            0% {right: -40%;}
+            100% {right: 0%;}
+        }
+        #toast.hide {right: -40%;}
+        #toast.hide [data-id="timer"] {display: none;}
+        #toast::before {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background: #ccc;
+        }
+        #toast [data-id="timer"] {
+            content: "";
+            width: 100%;
+            height: 3px;
+            background: #00000099;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            /* animation: timer 3000ms 1; */
+            animation-name: timer;
+        }
+        @keyframes timer {
+            100% {width: 0;}
+        }
+        #toast [data-id="timer"].hide {display: none;}
+        #toast.danger {background: #fdd6d6; color: #810707;}
+        #toast.danger::before {background: red;}
+        #toast.success {background: #ceffce; color: #2f8f2f;}
+        #toast.success::before {background: green;}
+        #toast.warning {background: #ffffc7; color: #6b6b2e;}
+        #toast.warning::before {background: #f1f100;}
+        #toast [data-id="body"] {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+            gap: 10px;
+        }
+        #toast [data-id="body"]::before {
+            height: 20px;
+            content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px" viewBox="0 -960 960 960" fill="%23777"><path d="M444-288h72v-240h-72v240Zm35.79-312q15.21 0 25.71-10.29t10.5-25.5q0-15.21-10.29-25.71t-25.5-10.5q-15.21 0-25.71 10.29t-10.5 25.5q0 15.21 10.29 25.71t25.5 10.5Zm.49 504Q401-96 331-126t-122.5-82.5Q156-261 126-330.96t-30-149.5Q96-560 126-629.5q30-69.5 82.5-122T330.96-834q69.96-30 149.5-30t149.04 30q69.5 30 122 82.5T834-629.28q30 69.73 30 149Q864-401 834-331t-82.5 122.5Q699-156 629.28-126q-69.73 30-149 30Zm-.28-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z"/></svg>');
+        }
+        #toast.danger [data-id="body"]::before {
+            content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px" viewBox="0 -960 960 960" fill="%23EA3323"><path d="M341-144 144-342v-277l197-197h278l197 197v278L618-144H341Zm32-179 107-106 107 106 50-50-106-107 106-107-50-50-107 106-107-106-50 50 106 107-106 107 50 50Zm-2 107h218l155-155v-218L588-744H371L216-589v218l155 155Zm109-264Z"/></svg>');
+        }
+        #toast.warning [data-id="body"]::before {
+            content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px" viewBox="0 -960 960 960" fill="%23b9b928"><path d="m48-144 432-720 432 720H48Zm127-72h610L480-724 175-216Zm304.79-48q15.21 0 25.71-10.29t10.5-25.5q0-15.21-10.29-25.71t-25.5-10.5q-15.21 0-25.71 10.29t-10.5 25.5q0 15.21 10.29 25.71t25.5 10.5ZM444-384h72v-192h-72v192Zm36-86Z"/></svg>');
+        }
+        #toast.success [data-id="body"]::before {
+            content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px" viewBox="0 -960 960 960" fill="%2300ff00"><path d="m429-336 238-237-51-51-187 186-85-84-51 51 136 135Zm51 240q-79 0-149-30t-122.5-82.5Q156-261 126-331T96-480q0-80 30-149.5t82.5-122Q261-804 331-834t149-30q80 0 149.5 30t122 82.5Q804-699 834-629.5T864-480q0 79-30 149t-82.5 122.5Q699-156 629.5-126T480-96Zm0-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z"/></svg>');
+        }
+        #toast button[data-role="close"] {
+            position: absolute;
+            right: 15px;
+            height: 20px;
+            border: 0;
+            background: 0;
+        }
+
+    </style>
+</head>
+<body id="body">
+    <button type="button" id="showModal" style="padding: 10px 20px; background: #fff; color: #333; border: 1px solid green; border-radius: 10px; cursor: pointer;">SHOW MODAL</button>
+</body>
+<script>
+    /**
+     * 토스트 생성
+     * @param content 내용
+     * @param type 유형: [D]anger, [S]uccess, [W]arning, [P]rimary
+     * @param option 
+     * {
+     *  time: 2000, // 유지 시간
+     *  showTimer: true, // 타이머 출력 여부
+     * }
+     */
+    const toast = (content, type = "D", option) => {
+
+        const optionDefault = {
+            time: 2000,
+            showTimer: true,
+        }
+        option = {
+            ...optionDefault,
+            ...option
+        }
+
+        const getType = () => {
+            const lowType = type.toLowerCase()
+            switch(lowType) {
+                case "d": return "danger"
+                case "s": return "success"
+                case "w": return "warning"
+                case "p": return "primary"
+                default: return lowType
+            }
+        }
+
+        const id = `customId_No${Math.floor(Math.random() * 10e5)}`
+        document.head.insertAdjacentHTML("beforeend", `<style>
+        </style>`)
+        document.body.insertAdjacentHTML("afterbegin", `
+        <div id="toast" class="${getType()}">
+            <div data-id="body">${content}</div>
+            <button type="button" data-role="close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#555">
+                    <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </button>
+            <div data-id="timer"></div>
+        </div>
+        `)
+
+        const close = () => toast.classList.add("hide") ?? toast.addEventListener("transitionend", toast.remove)
+        const toast = document.querySelector("#toast")
+        toast.addEventListener("click", close)
+        const timer = toast.querySelector(`[data-id="timer"]`)
+        timer.style.animationDuration = option.time + "ms"
+        timer.addEventListener("animationend", close)
+        if(!option.showTimer) timer.classList.add("hide") ?? setTimeout(close, option.time)
+    }
+
+    document.querySelector("#showModal").addEventListener("click", () => 
+    toast("Danger Toast", "D", {showTimer: false})
+    // toast("Success Toast", "S")
+    // toast("Warning Toast", "W")
+    // toast("Primary Toast", "P")
+    )
+</script>
+</html>
