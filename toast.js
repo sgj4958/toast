@@ -1,28 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>메인 페이지</title>
+/**
+ * 토스트 생성
+ * @param content 내용
+ * @param type 유형: [D]anger, [S]uccess, [W]arning, [P]rimary
+ * @param option 
+ * {
+ * time: 2000, // 유지 시간
+ * showTimer: true, // 타이머 표시 여부
+ * }
+ */
+const toast = (content, type = "D", option) => {
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            list-style: none;
+    const optionDefault = {
+        time: 2000,
+        showTimer: true,
+    }
+    option = {
+        ...optionDefault,
+        ...option
+    }
+
+    const getType = () => {
+        const lowType = type.toLowerCase()
+        switch(lowType) {
+            case "d": return "danger"
+            case "s": return "success"
+            case "w": return "warning"
+            case "p": return "primary"
+            default: return lowType
         }
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 50px;
-        }
+    }
 
+    const height = 45
+    const bottom = 10
 
-
-
+    // const id = `customId_No${Math.floor(Math.random() * 10e5)}`
+    document.head.insertAdjacentHTML("beforeend", `<style>
         #toast {
             width: 400px;
             height: 45px;
@@ -105,80 +117,28 @@
             border: 0;
             background: 0;
         }
+    </style>`)
+    document.body.insertAdjacentHTML("afterbegin", `
+    <div id="toast" class="${getType()}" data-role="toast" style="bottom: ${
+        document.querySelector(`[data-role="toast"]`)
+        ? parseInt( getComputedStyle( document.querySelector(`[data-role="toast"]`) ).bottom ) + height + bottom
+        : bottom
+    }px">
+        <div data-id="body">${content}</div>
+        <button type="button" data-role="close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#555">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+            </svg>
+        </button>
+        <div data-id="timer"></div>
+    </div>
+    `)
 
-    </style>
-</head>
-<body id="body">
-    <button type="button" id="showModal" style="padding: 10px 20px; background: #fff; color: #333; border: 1px solid green; border-radius: 10px; cursor: pointer;">SHOW MODAL</button>
-</body>
-<script>
-    /**
-     * 토스트 생성
-     * @param content 내용
-     * @param type 유형: [D]anger, [S]uccess, [W]arning, [P]rimary
-     * @param option 
-     * {
-     * time: 2000, // 유지 시간
-     * showTimer: true, // 타이머 표시 여부
-     * }
-     */
-    const toast = (content, type = "D", option) => {
-
-        const optionDefault = {
-            time: 2000,
-            showTimer: true,
-        }
-        option = {
-            ...optionDefault,
-            ...option
-        }
-
-        const getType = () => {
-            const lowType = type.toLowerCase()
-            switch(lowType) {
-                case "d": return "danger"
-                case "s": return "success"
-                case "w": return "warning"
-                case "p": return "primary"
-                default: return lowType
-            }
-        }
-
-        const height = 45
-        const bottom = 10
-
-        const id = `customId_No${Math.floor(Math.random() * 10e5)}`
-        document.head.insertAdjacentHTML("beforeend", `<style>
-        </style>`)
-        document.body.insertAdjacentHTML("afterbegin", `
-        <div id="toast" class="${getType()}" data-role="toast" style="bottom: ${
-            document.querySelector(`[data-role="toast"]`)
-            ? parseInt( getComputedStyle( document.querySelector(`[data-role="toast"]`) ).bottom ) + height + bottom
-            : bottom
-        }px">
-            <div data-id="body">${content}</div>
-            <button type="button" data-role="close">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#555">
-                    <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
-                </svg>
-            </button>
-            <div data-id="timer"></div>
-        </div>
-        `)
-
-        const close = () => toast.classList.add("hide") ?? toast.addEventListener("transitionend", toast.remove)
-        const toast = document.querySelector("#toast")
-        toast.addEventListener("click", close)
-        const timer = toast.querySelector(`[data-id="timer"]`)
-        timer.style.animationDuration = option.time + "ms"
-        timer.addEventListener("animationend", close)
-        option.showTimer || (timer.classList.add("hide") ?? setTimeout(close, option.time))
-    }
-
-    const typeArray = ["d", "s", "w", "p"]
-    let type = 0
-    document.querySelector("#showModal").addEventListener("click", () => 
-    toast("Danger Toast", typeArray[type++], {showTimer: false})
-    )
-</script>
-</html>
+    const close = () => toast.classList.add("hide") ?? toast.addEventListener("transitionend", toast.remove)
+    const toast = document.querySelector("#toast")
+    toast.addEventListener("click", close)
+    const timer = toast.querySelector(`[data-id="timer"]`)
+    timer.style.animationDuration = option.time + "ms"
+    timer.addEventListener("animationend", close)
+    option.showTimer || (timer.classList.add("hide") ?? setTimeout(close, option.time))
+}
